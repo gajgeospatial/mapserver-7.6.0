@@ -2196,7 +2196,7 @@ static int msWFSRunBasicGetFeature(mapObj* map,
     map->query.rect = map->extent;
     map->query.layer = lp->index;
 
-    if( FLTLayerSetInvalidRectIfSupported(lp, &(map->query.rect)) )
+    if( FLTLayerSetInvalidRectIfSupported(lp, &(map->query.rect), map->debug) )
     {
         /* do nothing */
     }

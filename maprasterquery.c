@@ -810,8 +810,16 @@ int msRasterQueryByRect(mapObj *map, layerObj *layer, rectObj queryRect)
       goto cleanup;
     }
 
+	char * np_decrypted_path = NULL;
+	char ** options = NULL;
+	int haveTable = msHasRasterTable(decrypted_path, &np_decrypted_path, &options);
     msAcquireLock( TLOCK_GDAL );
-    if( !layer->tileindex )
+	if (haveTable)
+	{
+		hDS = GDALOpenEx(np_decrypted_path, GDAL_OF_RASTER | GDAL_OF_READONLY, NULL, options, NULL);
+		msFreeRasterTable(&np_decrypted_path, &options);
+	}
+    else if( !layer->tileindex )
     {
         char** connectionoptions = msGetStringListFromHashTable(&(layer->connectionoptions));
         hDS = GDALOpenEx(decrypted_path,
@@ -1354,14 +1362,25 @@ int msRASTERLayerGetExtent(layerObj *layer, rectObj *extent)
   char* decrypted_path = msDecryptStringTokens( map, szPath );
   if( !decrypted_path )
       return MS_FAILURE;
-
-  char** connectionoptions = msGetStringListFromHashTable(&(layer->connectionoptions));
-  GDALDatasetH hDS = GDALOpenEx(decrypted_path,
-                                GDAL_OF_RASTER,
-                                NULL,
-                                (const char* const*)connectionoptions,
-                                NULL);
-  CSLDestroy(connectionoptions);
+  GDALDatasetH hDS = NULL;
+  char * np_decrypted_path = NULL;
+  char ** options = NULL;
+  int haveTable = msHasRasterTable(decrypted_path, &np_decrypted_path, &options);
+  if (haveTable)
+  {
+	  hDS = GDALOpenEx(np_decrypted_path, GDAL_OF_RASTER | GDAL_OF_READONLY, NULL, options, NULL);
+	  msFreeRasterTable(&np_decrypted_path, &options);
+  }
+  else
+  {
+	  char** connectionoptions = msGetStringListFromHashTable(&(layer->connectionoptions));
+	  hDS = GDALOpenEx(decrypted_path,
+		  GDAL_OF_RASTER,
+		  NULL,
+		  (const char* const*)connectionoptions,
+		  NULL);
+	  CSLDestroy(connectionoptions);
+  }
   msFree( decrypted_path );
   if( hDS == NULL ) {
     return MS_FAILURE;

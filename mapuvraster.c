@@ -589,15 +589,26 @@ int msUVRASTERLayerWhichShapes(layerObj *layer, rectObj rect, int isQuery)
 
           if( decrypted_path )
           {
-              char** connectionoptions;
-              GDALAllRegister();
-              connectionoptions = msGetStringListFromHashTable(&(layer->connectionoptions));
-              hDS = GDALOpenEx(decrypted_path,
-                                        GDAL_OF_RASTER,
-                                        NULL,
-                                        (const char* const*)connectionoptions,
-                                        NULL);
-              CSLDestroy(connectionoptions);
+			  GDALAllRegister();
+			  char * np_decrypted_path = NULL;
+			  char ** options = NULL;
+			  int haveTable = msHasRasterTable(decrypted_path, &np_decrypted_path, &options);
+			  if (haveTable)
+			  {
+				  hDS = GDALOpenEx(np_decrypted_path, GDAL_OF_RASTER | GDAL_OF_READONLY, NULL, options, NULL);
+				  msFreeRasterTable(&np_decrypted_path, &options);
+			  }
+			  else
+			  {
+				  char** connectionoptions;
+				  connectionoptions = msGetStringListFromHashTable(&(layer->connectionoptions));
+				  hDS = GDALOpenEx(decrypted_path,
+					  GDAL_OF_RASTER,
+					  NULL,
+					  (const char* const*)connectionoptions,
+					  NULL);
+				  CSLDestroy(connectionoptions);
+			  }
           }
           if( hDS != NULL )
           {

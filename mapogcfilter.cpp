@@ -737,11 +737,22 @@ static FilterEncodingNode* FLTGetTopBBOX(FilterEncodingNode *psNode)
 /************************************************************************/
 
 int FLTLayerSetInvalidRectIfSupported(layerObj* lp,
-                                      rectObj* rect)
+                                      rectObj* rect, int debug)
 {
     const char* pszUseDefaultExtent = msOWSLookupMetadata(&(lp->metadata), "F",
                                               "use_default_extent_for_getfeature");
-    if( pszUseDefaultExtent && !CSLTestBoolean(pszUseDefaultExtent) &&
+	const char *value;
+	value = msOWSLookupMetadata(&(lp->metadata), "FOG", "geomtype");
+	int noGeometry = 0;
+	if (strcasecmp(value, "None") == 0)
+		noGeometry = 1;
+
+	if ((debug == MS_DEBUGLEVEL_VVV) && noGeometry)
+	{
+		msDebug("FLTLayerApplyPlainFilterToLayer(): Layer Has No Geometry\n");
+	}
+
+	if( ((pszUseDefaultExtent && !CSLTestBoolean(pszUseDefaultExtent)) || noGeometry) &&
         (lp->connectiontype == MS_OGR ||
         ((lp->connectiontype == MS_PLUGIN) && (strstr(lp->plugin_library,"msplugin_mssql2008") != NULL))) )
     {
@@ -769,7 +780,7 @@ int FLTLayerApplyPlainFilterToLayer(FilterEncodingNode *psNode, mapObj *map,
     FilterEncodingNode* psTopBBOX;
     rectObj rect = map->extent;
 
-    FLTLayerSetInvalidRectIfSupported(lp, &rect);
+    FLTLayerSetInvalidRectIfSupported(lp, &rect, map->debug);
 
     psTopBBOX = FLTGetTopBBOX(psNode);
     if( psTopBBOX )
@@ -808,9 +819,9 @@ int FLTLayerApplyPlainFilterToLayer(FilterEncodingNode *psNode, mapObj *map,
     if(map->debug == MS_DEBUGLEVEL_VVV)
     {
       if( pszExpression )
-        msDebug("FLTLayerApplyPlainFilterToLayer(): %s, rect=%.15g,%.15g,%.15g,%.15g\n", pszExpression, rect.minx, rect.miny, rect.maxx, rect.maxy);
+        msDebug("FLTLayerApplyPlainFilterToLayer(): %s, rect=%.15g,%.15g,%.15g,%.15g Layer %s\n", pszExpression, rect.minx, rect.miny, rect.maxx, rect.maxy,lp->name);
       else
-        msDebug("FLTLayerApplyPlainFilterToLayer(): rect=%.15g,%.15g,%.15g,%.15g\n", rect.minx, rect.miny, rect.maxx, rect.maxy);
+        msDebug("FLTLayerApplyPlainFilterToLayer(): rect=%.15g,%.15g,%.15g,%.15g Layer %s\n", rect.minx, rect.miny, rect.maxx, rect.maxy,lp->name);
     }
 
     status = FLTApplyFilterToLayerCommonExpressionWithRect(map, iLayerIndex,

@@ -641,22 +641,30 @@ void* msDrawRasterLayerLowOpenDataset(mapObj *map, layerObj *layer,
   *p_decrypted_path = msDecryptStringTokens( map, pszPath );
   if( *p_decrypted_path == NULL )
     return NULL;
-
+  char * np_decrypted_path = NULL;
+  char ** options = NULL;
+  int haveTable = msHasRasterTable(*p_decrypted_path, &np_decrypted_path, &options);
   msAcquireLock( TLOCK_GDAL );
-  if( !layer->tileindex )
+  if (haveTable)
   {
-    char** connectionoptions = msGetStringListFromHashTable(&(layer->connectionoptions));
-    GDALDatasetH hDS = GDALOpenEx( *p_decrypted_path,
-                                   GDAL_OF_RASTER | GDAL_OF_SHARED,
-                                   NULL,
-                                   (const char* const*)connectionoptions,
-                                   NULL);
-    CSLDestroy(connectionoptions);
-    return hDS;
+		GDALDatasetH Rds = GDALOpenEx(np_decrypted_path, GDAL_OF_RASTER | GDAL_OF_SHARED | GDAL_OF_READONLY, NULL, options, NULL);
+		msFreeRasterTable(&np_decrypted_path, &options);
+		return Rds;
+  }
+  else if( !layer->tileindex )
+  {
+		char** connectionoptions = msGetStringListFromHashTable(&(layer->connectionoptions));
+		GDALDatasetH hDS = GDALOpenEx( *p_decrypted_path,
+									   GDAL_OF_RASTER | GDAL_OF_SHARED,
+									   NULL,
+									   (const char* const*)connectionoptions,
+									   NULL);
+		CSLDestroy(connectionoptions);
+		return hDS;
   }
   else
   {
-    return GDALOpenShared( *p_decrypted_path, GA_ReadOnly );
+		return GDALOpenShared(*p_decrypted_path, GA_ReadOnly);
   }
 }
 

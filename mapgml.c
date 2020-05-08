@@ -1769,6 +1769,10 @@ int msGMLWriteWFSQuery(mapObj *map, FILE *stream, const char *default_namespace_
            return MS_FAILURE;
         }
       }
+	  if (map->debug == MS_DEBUGLEVEL_VVV)
+	  {
+		 msDebug("msGMLWriteWFSQuery() Has %d Features to Transmit From Layer %s\n", lp->resultcache->numresults, lp->name);
+	  }
 
       for(j=0; j<lp->resultcache->numresults; j++) {
         char* pszFID;
@@ -1880,6 +1884,10 @@ int msGMLWriteWFSQuery(mapObj *map, FILE *stream, const char *default_namespace_
         pszFID = NULL;
         msFreeShape(&shape); /* init too */
       }
+	  if (map->debug == MS_DEBUGLEVEL_VVV)
+	  {
+		  msDebug("msGMLWriteWFSQuery() Sent %d Features From Layer %s\n", j, lp->name);
+	  }
 
       msProjectDestroyReprojector(reprojector);
 

@@ -488,7 +488,7 @@ extern "C" {
   /* General enumerated types - needed by scripts */
   enum MS_FILE_TYPE {MS_FILE_MAP, MS_FILE_SYMBOL};
   enum MS_UNITS {MS_INCHES, MS_FEET, MS_MILES, MS_METERS, MS_KILOMETERS, MS_DD, MS_PIXELS, MS_PERCENTAGES, MS_NAUTICALMILES, MS_INHERIT = -1};
-  enum MS_SHAPE_TYPE {MS_SHAPE_POINT, MS_SHAPE_LINE, MS_SHAPE_POLYGON, MS_SHAPE_NULL};
+  enum MS_SHAPE_TYPE {MS_SHAPE_POINT, MS_SHAPE_LINE, MS_SHAPE_POLYGON, MS_SHAPE_NULL, MS_SHAPE_ATTRIBUTE};
   enum MS_LAYER_TYPE {MS_LAYER_POINT, MS_LAYER_LINE, MS_LAYER_POLYGON, MS_LAYER_RASTER, MS_LAYER_ANNOTATION /* only used for parser backwards compatibility */, MS_LAYER_QUERY, MS_LAYER_CIRCLE, MS_LAYER_TILEINDEX, MS_LAYER_CHART};
   enum MS_FONT_TYPE {MS_TRUETYPE, MS_BITMAP};
   enum MS_RENDER_MODE {MS_FIRST_MATCHING_CLASS, MS_ALL_MATCHING_CLASSES};
@@ -2947,6 +2947,8 @@ extern "C" {
   MS_DLL_EXPORT void msEncryptStringWithKey(const unsigned char *key, const char *in, char *out);
   MS_DLL_EXPORT void msDecryptStringWithKey(const unsigned char *key, const char *in, char *out);
   MS_DLL_EXPORT char *msDecryptStringTokens(mapObj *map, const char *in);
+  MS_DLL_EXPORT int msHasRasterTable(const char *decryptstr, char ** newdecryptstr, char *** Options);
+  MS_DLL_EXPORT void msFreeRasterTable(char ** newdecryptstr, char *** Options);
   MS_DLL_EXPORT void msHexEncode(const unsigned char *in, char *out, int numbytes);
   MS_DLL_EXPORT int msHexDecode(const char *in, unsigned char *out, int numchars);
 

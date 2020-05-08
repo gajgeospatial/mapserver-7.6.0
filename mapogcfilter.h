@@ -142,7 +142,7 @@ FilterEncodingNode* FLTSimplify(FilterEncodingNode *psFilterNode,
 int FLTApplyFilterToLayerCommonExpressionWithRect(mapObj *map, int iLayerIndex, const char *pszExpression, rectObj rect);
 int FLTProcessPropertyIsNull(FilterEncodingNode *psFilterNode,
                             mapObj *map, int i);
-int FLTLayerSetInvalidRectIfSupported(layerObj* lp, rectObj* rect);
+int FLTLayerSetInvalidRectIfSupported(layerObj* lp, rectObj* rect, int debug);
 
 #ifdef __cplusplus
 }
