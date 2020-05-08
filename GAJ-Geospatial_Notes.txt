@@ -1,0 +1,22 @@
+Set envionment for this project as MAPSERVER_DIR
+
+Changed files in mapserver-7.6.0 to support tile Geopackage CDB Content
+
+kerneldensity.c	add rasterTable support
+mapcairo.c add rasterTable support
+mapcontour.c add rasterTable support
+mapcrypto.c add rasterTable support
+mapgml.c    debug output
+mapio.c     set mode
+mapogcfilter.c FOG & noGeometry
+mapogr.cpp  base64 process...
+mapraster.c rasterTable support
+maprasterquery.c rasterTable support
+mapserver.h MS_SHAPE_ATTRIBUE msHasRasterTable declaration
+mapuvraster.c rasterTable support
+mapwcs.c rasterTable support
+mapwcs20.c rasterTable support
+
+
+
+
