@@ -56,7 +56,9 @@
 #endif
 
 #if defined(_WIN32) && !defined(__CYGWIN__)
+#ifndef MS_DLL_EXPORT
 #  define MS_DLL_EXPORT     __declspec(dllexport)
+#endif
 #define USE_MSFREE
 #else
 #define  MS_DLL_EXPORT

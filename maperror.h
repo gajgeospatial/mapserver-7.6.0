@@ -91,7 +91,9 @@ extern "C" {
 #define MS_ERROR_LANGUAGE "en-US"
 
 #if defined(_WIN32) && !defined(__CYGWIN__)
+#ifndef MS_DLL_EXPORT
 #  define MS_DLL_EXPORT     __declspec(dllexport)
+#endif
 #else
 #define  MS_DLL_EXPORT
 #endif
